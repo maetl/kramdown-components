@@ -17,9 +17,23 @@ To use the enhanced documents with components, create a `CustomDocument` instanc
 ```ruby
 require "kramdown-components"
 
-doc = Kramdown::CustomDocument("# Title")
+document = Kramdown::CustomDocument("# Title")
 
-puts doc.to_html
+puts document.to_html
+```
+
+Document [configuration options](https://kramdown.gettalong.org/options.html) can be passed to the document constructor in the same way as `Kramdown::Document`.
+
+```ruby
+require "kramdown-parser-gfm"
+require "kramdown-components"
+
+document = Kramdown::CustomDocument(File.read("README.md"), {
+  input: "GFM",
+  syntax_highlighter: "rouge"
+)
+
+puts document.to_html
 ```
 
 ### Registering Components
@@ -132,10 +146,10 @@ Using the [HoneyGB palette](https://lospec.com/palette-list/honeygb):
 
 <color-swatch>
 
-- #3e3a42
-- #877286
-- #f0b695
-- #e9f5da
+- `#3e3a42`
+- `#877286`
+- `#f0b695`
+- `#e9f5da`
 
 </color-swatch>
 ```
