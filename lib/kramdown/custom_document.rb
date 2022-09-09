@@ -53,7 +53,7 @@ module Kramdown
     end
 
     def method_missing(id, *attr, &block)
-      super
+      @parsed_dom.send(id, attr, &block)
     end
 
     def generate_el_id(tagname)
