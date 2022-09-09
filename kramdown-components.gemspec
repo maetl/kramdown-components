@@ -7,9 +7,9 @@ Gem::Specification.new do |spec|
   spec.authors = ["Mark Rickerby"]
   spec.email = "me@maetl.net"
   spec.files = `git ls-files -z`.split("\x0").reject { |f| f.match(%r{^(test|spec|features)/}) }
-  spec.add_runtime_dependency "kramdown", '~> 2.4.0'
-  spec.add_development_dependency "bundler"
-  spec.add_development_dependency "rspec"
+  spec.add_runtime_dependency "kramdown", "~> 2.4.0"
+  spec.add_development_dependency "bundler", "~> 2.3.22"
+  spec.add_development_dependency "rspec", "~> 3.11.0"
   #spec.add_development_dependency "rspec-html"
   spec.homepage = "https://github.com/maetl/kramdown-components"
   spec.license = "MIT"
