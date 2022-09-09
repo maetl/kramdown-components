@@ -20,6 +20,7 @@ end
 class ColorSwatch < Kramdown::CustomElement
   def parse_dom(root)
     ul = root.children.find { |child_el| child_el.type == :ul }
+
     @colors = ul.children.map do |li|
       li.children.first.children.first.value
     end

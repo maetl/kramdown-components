@@ -13,15 +13,15 @@ module Kramdown
       @@custom_elements[tag_name] = element
     end
 
+    DEFAULTS = {
+      parse_block_html: true
+    }
+
     attr_reader :custom_elements
 
-    def initialize(source)
+    def initialize(source, options={})
       @source = source
-      @parsed_dom = Kramdown::Document.new(@source, {
-        input: "GFM",
-        parse_block_html: true,
-        syntax_highlighter: "rouge"
-      })
+      @parsed_dom = Kramdown::Document.new(@source, DEFAULTS.merge(options))
       @custom_elements = extract_custom_elements
     end
 
@@ -37,24 +37,11 @@ module Kramdown
       @parsed_dom.to_html
     end
 
-    def has_js?
-      !@custom_elements.empty?
-    end
-
-    def to_js
-      bundle = ["const EXAMPLE_HANDLERS = {}"]
-
-      @custom_elements.each do |element|
-        bundle << element.to_js
-        bundle << "EXAMPLE_HANDLERS[\"#{element.id}\"] = #{element.name}"
-      end
-
-      bundle.join("\n\n")
-    end
-
     def method_missing(id, *attr, &block)
       @parsed_dom.send(id, attr, &block)
     end
+
+    private
 
     def generate_el_id(tagname)
       alphabet = [('a'..'z')].map(&:to_a).flatten
@@ -76,21 +63,6 @@ module Kramdown
           custom_element_cls = @@custom_elements[outer_el.value]
           element = custom_element_cls.new(outer_el.attr["id"])
           element.parse_dom(outer_el)
-
-          # codeblocks = outer_el.children.filter { |child_el| child_el.type == :codeblock }
-          #
-          # outer_el.children = codeblocks.map do |codeblock|
-          #   wrapper = Kramdown::Element.new(
-          #     :html_element,
-          #     "example-script",
-          #     { label: LANG_LABELS[codeblock.options[:lang]] },
-          #     { content_model: :block }
-          #   )
-          #   wrapper.children << codeblock
-          #   wrapper
-          # end
-          #
-          # outer_el.children.first.attr[:selected] = true
 
           elements << element
         end
