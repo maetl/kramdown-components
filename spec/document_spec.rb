@@ -29,4 +29,21 @@ describe Kramdown::CustomDocument do
     expect(document.to_latex).to be_instance_of(String)
     expect(document.to_man).to be_instance_of(String)
   end
+
+  it "provides root DOM element" do
+    document = Kramdown::CustomDocument.new(
+      "# TOC\n\nUse custom elements in Markdown docs."
+    )
+
+    expect(document.root.type).to be :root
+    expect(document.root.children.first.type).to be :header
+  end
+
+  it "provides warning accessor" do
+    document = Kramdown::CustomDocument.new(
+      "<span><p>Block inside inline</p></span>"
+    )
+
+    expect(document.warnings.count).to be > 0
+  end
 end
