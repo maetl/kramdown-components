@@ -1,8 +1,8 @@
 # Kramdown Components
 
-Rewrite sections of Markdown documents using HTML Custom Elements.
+Rewrite and capture sections of Markdown documents using HTML Custom Elements.
 
-Useful for enhancing code blocks and formatted markup with more sophisticated controls while maintaining a clean separation of presentation and content.
+Useful for enhancing code blocks and formatted markup with more sophisticated controls while maintaining a clean separation of presentation and content. Extract content from custom elements.
 
 ## How it Works
 
@@ -38,7 +38,7 @@ class ImageGallery < Kramdown::CustomElement; end
 Kramdown::CustomDocument.define_element("image-gallery", ImageGallery)
 ```
 
-### DOM Rewriting
+### Rewriting the DOM
 
 To rewrite DOM subtrees wrapped by the component, implement the `parse_dom` method of `CustomElement` and manipulate the internal `root` and `children` elements, with instances of `Kramdown::Element` to represent each node.
 
@@ -59,7 +59,7 @@ end
 Kramdown::CustomDocument.define_element("button-list", ButtonList)
 ```
 
-When the `ButtonList#parse_dom` rewrite is applied, all child lists nested within the `<button-list>` component to have the content of each list item wrapped in a `<button>`.
+When this `#parse_dom` hook is applied, all child lists nested within the `<button-list>` component get rewritten to have the content of each list item wrapped in a `<button>`.
 
 **Source:**
 
@@ -83,4 +83,74 @@ When the `ButtonList#parse_dom` rewrite is applied, all child lists nested withi
     <li><button>Three</button></li>
   </ul>
 </button-list>
+```
+
+## Extracting Content from the DOM
+
+It’s also possible to use `#parse_dom` to extract content from the document, with or without rewriting.
+
+```ruby
+class Color
+  def self.from_hex(value)
+    r, g, b = value.match(/^#(..)(..)(..)$/).captures.map(&:hex)
+    new(r, g, b)
+  end
+
+  attr_reader :r, :g, :b
+
+  def initialize(r, g, b)
+    @r = r
+    @g = g
+    @b = b
+  end
+
+  def to_css
+    "rgb(#{r}, #{g}, #{b})"
+  end
+end
+
+class ColorSwatch < Kramdown::CustomElement
+  def parse_dom(root)
+    ul = root.children.find { |child_el| child_el.type == :ul }
+    @colors = ul.children.map do |li|
+      li.children.first.children.first.value
+    end
+  end
+
+  def to_a
+    @colors.map { |hex| Color.from_hex(hex) }
+  end
+end
+
+Kramdown::CustomDocument.define_element("color-swatch", ColorSwatch)
+```
+
+**Source:**
+
+```md
+Using the [HoneyGB palette](https://lospec.com/palette-list/honeygb):
+
+<color-swatch>
+
+- #3e3a42
+- #877286
+- #f0b695
+- #e9f5da
+
+</color-swatch>
+```
+
+**Result:**
+
+```ruby
+document = Kramdown::CustomDocument(source)
+
+# Get a reference to the parsed `ColorSwatch` instance
+color_swatch = document.custom_elements.first
+
+# Use the custom `#to_a` method to get the first extracted color
+color = color_swatch.to_a.first
+
+# Render the color value as an RGB string
+color.to_css
 ```
