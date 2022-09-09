@@ -1,7 +1,12 @@
 require "kramdown"
 
 module Kramdown
+  # An enhanced Kramdown document that supports embedded web components
+  # with user-defined DOM parsing and rewriting behaviour.
   class CustomDocument
+    # Define a custom element mapping for all document instances.
+    # @param [String] name Tag name. Must conform to HTML Custom Element spec.
+    # @param [Class] element CustomElement class to bind
     def self.define_element(name, element=nil)
       if element.nil?
         element = CustomElement
@@ -25,18 +30,36 @@ module Kramdown
       @custom_elements = extract_custom_elements
     end
 
+    # Configuration options hash.
+    # @return [Hash]
+    def options
+      @parsed_dom.options
+    end
+
+    # The root of the element tree.
+    # @return [Kramdown::Element]
     def root
       @parsed_dom.root
     end
 
+    # An array of warning messages. Filled during the parsing and conversion
+    # phases.
+    # @return [Array]
     def warnings
       @parsed_dom.warnings
     end
 
-    def to_html
-      @parsed_dom.to_html
+    # @return [String]
+    def inspect
+      "<KD:CustomDocument:" \
+        "options=#{options.inspect}" \
+        "root=#{root.inspect}" \
+        "warnings=#{warnings.inspect}" \
+        "custom_elements=#{@custom_elements.inspect}>"
     end
 
+    # Check if a method is invoked that begins with +to_+ and if so, try to
+    # instantiate a converter.
     def method_missing(id, *attr, &block)
       @parsed_dom.send(id, attr, &block)
     end
