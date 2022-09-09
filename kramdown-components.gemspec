@@ -1,6 +1,6 @@
 Gem::Specification.new do |spec|
   spec.name = "kramdown-components"
-  spec.version = "0.1.0"
+  spec.version = "0.1.1"
   spec.platform = Gem::Platform::RUBY
   spec.summary = "Rewrite sections of Markdown documents using HTML Custom Elements."
   spec.description = "Mix and match HTML and Markdown syntax. Generate nested DOM trees from a single top level element."
