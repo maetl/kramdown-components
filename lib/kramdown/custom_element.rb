@@ -1,13 +1,12 @@
 module Kramdown
   class CustomElement
-    attr_reader :id, :outer_el
+    attr_reader :id
 
-    def initialize(id, outer_el)
+    def initialize(id)
       @id = id
-      @outer_el = outer_el
     end
 
-    def parse_dom
+    def parse_dom(root)
     end
   end
 end

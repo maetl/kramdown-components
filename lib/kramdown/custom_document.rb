@@ -74,8 +74,8 @@ module Kramdown
           end
 
           custom_element_cls = @@custom_elements[outer_el.value]
-          element = custom_element_cls.new(outer_el.attr["id"], outer_el)
-          element.parse_dom
+          element = custom_element_cls.new(outer_el.attr["id"])
+          element.parse_dom(outer_el)
 
           # codeblocks = outer_el.children.filter { |child_el| child_el.type == :codeblock }
           #
